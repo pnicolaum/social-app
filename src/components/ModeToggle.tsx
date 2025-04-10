@@ -23,3 +23,5 @@ export function ModeToggle() {
      
   )
 }
+
+export default ModeToggle;
