@@ -51,7 +51,7 @@ export async function getUserByClerkId(clerkId: string) {
     },
   });
 }
-/*
+
 export async function getDbUserId() {
   const { userId: clerkId } = await auth();
   if (!clerkId) return null;
@@ -62,6 +62,7 @@ export async function getDbUserId() {
 
   return user.id;
 }
+/*
 
 export async function getRandomUsers() {
   try {
