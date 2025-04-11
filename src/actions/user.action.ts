@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
-// import { revalidatePath } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export async function syncUser() {
   try {
@@ -62,7 +62,6 @@ export async function getDbUserId() {
 
   return user.id;
 }
-/*
 
 export async function getRandomUsers() {
   try {
@@ -161,4 +160,3 @@ export async function toggleFollow(targetUserId: string) {
     return { success: false, error: "Error toggling follow" };
   }
 }
-*/
