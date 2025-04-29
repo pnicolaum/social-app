@@ -11,13 +11,29 @@ export async function syncUser() {
 
     if (!userId || !user) return;
 
-    const existingUser = await prisma.user.findUnique({
+    let existingUser = await prisma.user.findUnique({
       where: {
         clerkId: userId,
       },
     });
 
     if (existingUser) return existingUser;
+
+    const email = user.emailAddresses[0].emailAddress;
+
+    existingUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (existingUser) {
+      const updatedUser = await prisma.user.update({
+        where: { email: email },
+        data: { clerkId: userId },
+      });
+      return updatedUser;
+    }
 
     const dbUser = await prisma.user.create({
       data: {
