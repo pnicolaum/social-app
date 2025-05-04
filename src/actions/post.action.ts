@@ -18,7 +18,7 @@ export async function createPost(content: string, image: string) {
         authorId: userId,
       },
     });
-
+    console.log("image", image);
     revalidatePath("/"); // purge the cache for the home page
     return { success: true, post };
   } catch (error) {
@@ -209,9 +209,9 @@ export async function deletePost(postId: string) {
     // if (fileKey) {
     //   await deleteUploadThingFile(fileKey);
     // }
-    // await prisma.post.delete({
-    //   where: { id: postId },
-    // });
+    await prisma.post.delete({
+      where: { id: postId },
+    });
 
     revalidatePath("/"); // purge the cache
     return { success: true };
