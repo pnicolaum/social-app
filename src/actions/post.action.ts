@@ -3,13 +3,14 @@
 import prisma from "@/lib/prisma";
 import { getDbUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
+// import { deleteUploadThingFile } from "@/lib/uploadthing.server";
 
 export async function createPost(content: string, image: string) {
   try {
     const userId = await getDbUserId();
 
     if (!userId) return;
-
+    
     const post = await prisma.post.create({
       data: {
         content,
@@ -196,15 +197,21 @@ export async function deletePost(postId: string) {
 
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      select: { authorId: true },
+      select: { authorId: true, image: true },
     });
 
     if (!post) throw new Error("Post not found");
     if (post.authorId !== userId) throw new Error("Unauthorized - no delete permission");
 
-    await prisma.post.delete({
-      where: { id: postId },
-    });
+    // delete file from uploadthing
+    // const imageUrl = post.image;
+    // const fileKey =  post.image?.split("/f/")[1]; // Extract fileKey from URL
+    // if (fileKey) {
+    //   await deleteUploadThingFile(fileKey);
+    // }
+    // await prisma.post.delete({
+    //   where: { id: postId },
+    // });
 
     revalidatePath("/"); // purge the cache
     return { success: true };
