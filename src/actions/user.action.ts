@@ -19,22 +19,22 @@ export async function syncUser() {
 
     if (existingUser) return existingUser;
 
-    const email = user.emailAddresses[0].emailAddress;
-
-    existingUser = await prisma.user.findUnique({
+    // If the user delet his account only by clerck, it's still in the database
+    // so we have to previously delte the info from the neon ddbb
+    let userWithEmail = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: user.emailAddresses[0].emailAddress,
       },
-    });
+    })
 
-    if (existingUser) {
-      const updatedUser = await prisma.user.update({
-        where: { email: email },
-        data: { clerkId: userId },
+    if(userWithEmail) {
+      await prisma.user.delete({
+        where: {
+          email: user.emailAddresses[0].emailAddress,
+        },
       });
-      return updatedUser;
     }
-
+    
     const dbUser = await prisma.user.create({
       data: {
         clerkId: userId,
