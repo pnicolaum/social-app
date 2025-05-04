@@ -1,6 +1,6 @@
 "use client";
 
-import { getProfileByUsername, getUserPosts, updateProfile } from "@/actions/profile.action";
+import { getProfileByUsername, getUserPosts, updateProfile, deleteProfile } from "@/actions/profile.action";
 import { toggleFollow } from "@/actions/user.action";
 import PostCard from "@/components/PostCard";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +30,9 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+
+import { useClerk } from "@clerk/nextjs";
+import { DeleteAlertDialog } from "@/components/DeleteAlertDialog";
 
 type User = Awaited<ReturnType<typeof getProfileByUsername>>;
 type Posts = Awaited<ReturnType<typeof getUserPosts>>;
@@ -92,6 +95,27 @@ function ProfilePageClient({
 
   const formattedDate = format(new Date(user.createdAt), "MMMM yyyy");
 
+  const { signOut } = useClerk();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAndLogout = async () => {
+    try {
+      setIsDeleting(true);
+      const result = await deleteProfile();
+
+      if (result.success) {
+        toast.success("Profile deleted");
+        await signOut();
+      } else {
+        toast.error("Failed to delete profile");
+      }
+    } catch (err) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="grid grid-cols-1 gap-6">
@@ -132,10 +156,21 @@ function ProfilePageClient({
                     <Button className="w-full mt-4">Follow</Button>
                   </SignInButton>
                 ) : isOwnProfile ? (
-                  <Button className="w-full mt-4" onClick={() => setShowEditDialog(true)}>
-                    <EditIcon className="size-4 mr-2" />
-                    Edit Profile
-                  </Button>
+                  <>
+                    <Button className="w-full mt-4" onClick={() => setShowEditDialog(true)}>
+                      <EditIcon className="size-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    <div className="w-full mt-2">
+                    <DeleteAlertDialog
+                      isDeleting={isDeleting}
+                      onDelete={handleDeleteAndLogout}
+                      title="Delete Account"
+                      description="Are you sure you want to delete your account? This action cannot be undone."
+                      text="Delete Account"
+                    />
+                  </div>
+                  </>
                 ) : (
                   <Button
                     className="w-full mt-4"

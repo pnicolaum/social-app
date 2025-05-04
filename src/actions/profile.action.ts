@@ -195,3 +195,20 @@ export async function isFollowing(userId: string) {
     return false;
   }
 }
+
+export async function deleteProfile() {
+  try {
+    const { userId: clerkId } = await auth();
+    if (!clerkId) throw new Error("Unauthorized");
+
+    await prisma.user.delete({
+      where: { clerkId },
+    });
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting profile:", error);
+    return { success: false, error: "Failed to delete profile" };
+  }
+}
