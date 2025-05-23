@@ -105,7 +105,8 @@ function ProfilePageClient({
 
       if (result.success) {
         toast.success("Profile deleted");
-        await signOut();
+        await signOut(); 
+        window.location.href = "/";
       } else {
         toast.error("Failed to delete profile");
       }
