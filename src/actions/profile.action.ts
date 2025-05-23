@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getDbUserId } from "./user.action";
+import { clerkClient } from "@clerk/nextjs/server"; 
 
 export async function getProfileByUsername(username: string) {
   try {
@@ -204,6 +205,9 @@ export async function deleteProfile() {
     await prisma.user.delete({
       where: { clerkId },
     });
+    
+    const client = await clerkClient()
+    await client.users.deleteUser(clerkId)
 
     revalidatePath("/");
     return { success: true };
