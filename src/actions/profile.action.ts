@@ -205,9 +205,6 @@ export async function deleteProfile() {
     await prisma.user.delete({
       where: { clerkId },
     });
-    
-    const client = await clerkClient()
-    await client.users.deleteUser(clerkId)
 
     revalidatePath("/");
     return { success: true };

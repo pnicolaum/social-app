@@ -103,13 +103,23 @@ function ProfilePageClient({
       setIsDeleting(true);
       const result = await deleteProfile();
 
-      if (result.success) {
-        toast.success("Profile deleted");
-        await signOut(); 
-        window.location.href = "/";
-      } else {
+      if (!result.success) {
         toast.error("Failed to delete profile");
+        return;
       }
+      toast.success("Profile deleted");
+
+      const idToDelete = currentUser?.id;
+      await signOut();
+
+      await fetch("/api/delete-clerk-user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clerkId: idToDelete }),
+      });
+
+      window.location.href = "/";
+      
     } catch (err) {
       toast.error("Something went wrong");
     } finally {
