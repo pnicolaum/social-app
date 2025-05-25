@@ -134,7 +134,7 @@ function ProfilePageClient({
   return (
     <div className="max-w-3xl mx-auto">
       <div className="grid grid-cols-1 gap-6">
-        <div className="w-full max-w-lg mx-auto">
+        <div className="w-full max-w-lg mx-auto relative">
           <Card className="bg-card">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
@@ -176,15 +176,22 @@ function ProfilePageClient({
                       <EditIcon className="size-4 mr-2" />
                       Edit Profile
                     </Button>
-                    <div className="w-full mt-2">
-                    <DeleteAlertDialog
-                      isDeleting={isDeleting}
-                      onDelete={handleDeleteAndLogout}
-                      title="Delete Account"
-                      description="Are you sure you want to delete your account? This action cannot be undone."
-                      text="Delete Account"
-                    />
-                  </div>
+                    <div className="mt-2 space-y-2 w-1/4 absolute top-0 right-0 mr-4">
+                      <Button
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => signOut()}
+                        >
+                        Sign Out
+                      </Button>
+                      <DeleteAlertDialog
+                        isDeleting={isDeleting}
+                        onDelete={handleDeleteAndLogout}
+                        title="Delete Account"
+                        description="Are you sure you want to delete your account? This action cannot be undone."
+                        text="Delete Account"
+                        />
+                    </div>
                   </>
                 ) : (
                   <Button
