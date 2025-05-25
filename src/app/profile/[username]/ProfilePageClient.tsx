@@ -101,8 +101,10 @@ function ProfilePageClient({
   const handleDeleteAndLogout = async () => {
     try {
       setIsDeleting(true);
-      const result = await deleteProfile();
+      const expirationDate = new Date(Date.now() + 60 * 1000).toUTCString();
+      document.cookie = `deleting_account=true; expires=${expirationDate}; path=/; SameSite=Lax;${window.location.protocol === "https:" ? " Secure;" : ""}`;
 
+      const result = await deleteProfile();
       if (!result.success) {
         toast.error("Failed to delete profile");
         return;
@@ -110,6 +112,7 @@ function ProfilePageClient({
       toast.success("Profile deleted");
 
       const idToDelete = currentUser?.id;
+
       await signOut();
 
       await fetch("/api/delete-clerk-user", {
@@ -118,6 +121,7 @@ function ProfilePageClient({
         body: JSON.stringify({ clerkId: idToDelete }),
       });
 
+      document.cookie = "deleting_account=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       window.location.href = "/";
       
     } catch (err) {

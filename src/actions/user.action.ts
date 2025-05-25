@@ -4,12 +4,26 @@ import prisma from "@/lib/prisma";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 
+import { cookies } from "next/headers";
+
 export async function syncUser() {
+
   try {
+    const cookieStore = await cookies();
+    const isDeleting = cookieStore.get("deleting_account");
+    if (isDeleting?.value === "true") return null;
+
     const { userId } = await auth();
     const user = await currentUser();
 
-    if (!userId || !user) return;
+    if (!userId || !user) {
+      if (userId) {
+        await prisma.user.deleteMany({
+          where: { clerkId: userId }
+        });
+      }
+      return null;
+    }
 
     let existingUser = await prisma.user.findUnique({
       where: {
@@ -19,15 +33,15 @@ export async function syncUser() {
 
     if (existingUser) return existingUser;
 
-    // If the user delet his account only by clerck, it's still in the database
-    // so we have to previously delte the info from the neon ddbb
+    // If the user deletes his account only by clerck, it's still in the database
+    // so we have to previously delete the info from the neon ddbb
     let userWithEmail = await prisma.user.findUnique({
       where: {
         email: user.emailAddresses[0].emailAddress,
       },
     })
 
-    if(userWithEmail) {
+    if (userWithEmail && userWithEmail.clerkId !== userId) {
       await prisma.user.delete({
         where: {
           email: user.emailAddresses[0].emailAddress,
@@ -71,6 +85,8 @@ export async function getUserByClerkId(clerkId: string) {
 export async function getDbUserId() {
   const { userId: clerkId } = await auth();
   if (!clerkId) return null;
+
+  await syncUser();
 
   const user = await getUserByClerkId(clerkId);
 
