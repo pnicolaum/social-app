@@ -3,7 +3,7 @@
 import prisma from "@/lib/prisma";
 import { getDbUserId } from "./user.action";
 import { revalidatePath } from "next/cache";
-// import { deleteUploadThingFile } from "@/lib/uploadthing.server";
+import { utapi } from "@/lib/utapi";
 
 export async function createPost(content: string, image: string) {
   try {
@@ -203,12 +203,9 @@ export async function deletePost(postId: string) {
     if (!post) throw new Error("Post not found");
     if (post.authorId !== userId) throw new Error("Unauthorized - no delete permission");
 
-    // delete file from uploadthing
-    // const imageUrl = post.image;
-    // const fileKey =  post.image?.split("/f/")[1]; // Extract fileKey from URL
-    // if (fileKey) {
-    //   await deleteUploadThingFile(fileKey);
-    // }
+    const fileKey =  post.image?.split("/f/")[1];
+    if (fileKey) await utapi.deleteFiles(fileKey);
+
     await prisma.post.delete({
       where: { id: postId },
     });
