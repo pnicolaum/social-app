@@ -101,7 +101,7 @@ function NotificationsPage() {
                             {notification.post.image && (
                               <img
                                 src={notification.post.image}
-                                alt="Post content"
+                                alt="Post image"
                                 className="mt-2 rounded-md w-full max-w-[200px] h-auto object-cover"
                               />
                             )}

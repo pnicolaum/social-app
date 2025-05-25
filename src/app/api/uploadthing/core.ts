@@ -23,6 +23,8 @@ export const ourFileRouter = {
       try {
         console.log("Upload complete for userId:", metadata.userId);
         console.log("file url", file.ufsUrl);
+        console.log("file url", file.url);
+
         return { fileUrl: file.ufsUrl  }; //file.url
       } catch (error) {
         console.error("Error in onUploadComplete:", error);
