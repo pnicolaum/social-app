@@ -134,7 +134,7 @@ function ProfilePageClient({
   return (
     <div className="max-w-3xl mx-auto">
       <div className="grid grid-cols-1 gap-6">
-        <div className="w-full max-w-lg mx-auto relative">
+        <div className="w-full max-w-lg mx-auto">
           <Card className="bg-card">
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
@@ -176,7 +176,7 @@ function ProfilePageClient({
                       <EditIcon className="size-4 mr-2" />
                       Edit Profile
                     </Button>
-                    <div className="mt-2 space-y-2 w-1/4 absolute top-0 right-0 mr-4">
+                    <div className="mt-2 space-y-2 w-full ">
                       <Button
                         variant="outline"
                         className="w-full"
